@@ -2,8 +2,16 @@
 
 namespace Kata\MagicThree;
 
+/**
+ * @package Kata\MagicThree
+ */
 class MagicThree
 {
+	/**
+	 * @param array $numbers
+	 *
+	 * @return bool
+	 */
 	public function doMagic(array $numbers)
 	{
 		if (array_search(0, $numbers) !== false)
@@ -15,23 +23,23 @@ class MagicThree
 			return false;
 		}
 
-		$numbers2 = $this->getAllSubset($numbers, 2);
+		$twoLengthSubset = $this->getAllFixedLengthSubset($numbers, 2);
 
-		foreach ($numbers2 as $number2)
+		foreach ($twoLengthSubset as $subset)
 		{
 			if (
-				(array_sum($number2) + $number2[0]) == 0
-				|| (array_sum($number2) + $number2[1]) == 0
+				(array_sum($subset) + $subset[0]) == 0
+				|| (array_sum($subset) + $subset[1]) == 0
 			) {
 				return true;
 			}
 		}
 
-		$numbers3 = $this->getAllSubset($numbers, 3);
+		$threeLengthSubset = $this->getAllFixedLengthSubset($numbers, 3);
 
-		foreach ($numbers3 as $number3)
+		foreach ($threeLengthSubset as $subset)
 		{
-			if (array_sum($number3) == 0)
+			if (array_sum($subset) == 0)
 			{
 				return true;
 			}
@@ -40,7 +48,13 @@ class MagicThree
 		return false;
 	}
 
-	private function getAllSubset($numbers, $length)
+	/**
+	 * @param array $numbers
+	 * @param int   $length
+	 *
+	 * @return array
+	 */
+	private function getAllFixedLengthSubset(array $numbers, $length)
 	{
 		if (count($numbers) < $length)
 		{
@@ -52,20 +66,26 @@ class MagicThree
 			return [0 => $numbers];
 		}
 
-		$x = array_pop($numbers);
+		$number = array_pop($numbers);
 
-		if (is_null($x))
+		if (is_null($number))
 		{
 			return [];
 		}
 
 		return array_merge(
-			$this->getAllSubset($numbers, $length),
-			$this->mergeIntoEach($x, $this->getAllSubset($numbers, $length - 1))
+			$this->getAllFixedLengthSubset($numbers, $length),
+			$this->mergeIntoEachSubset($number, $this->getAllFixedLengthSubset($numbers, $length - 1))
 		);
 	}
 
-	private function mergeIntoEach($number, $numbers)
+	/**
+	 * @param int   $number
+	 * @param array $numbers
+	 *
+	 * @return array
+	 */
+	private function mergeIntoEachSubset($number, array $numbers)
 	{
 		foreach ($numbers as &$n)
 		{
